@@ -30,12 +30,7 @@ jobs:
         run: bun install
       - name: Run tests
         working-directory: .agents/skills/${{ matrix.cli }}/cli
-        # Each package.json defines "test": "bun test --timeout 30000", but
-        # prospects-search ships no tests/ directory yet — bun test errors on zero
-        # matching test files, so skip cleanly instead of failing CI on nothing to run.
-        run: |
-          if [ -d tests ]; then
-            bun run test
-          else
-            echo "No tests/ directory for ${{ matrix.cli }} - nothing to run."
-          fi
+        # RUN_LIVE_TESTS is deliberately not set: the suites that make real requests to
+        # job boards skip themselves here. CI stays offline, deterministic, and doesn't
+        # scrape third-party sites on every push.
+        run: bun run test

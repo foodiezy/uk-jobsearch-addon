@@ -15,7 +15,12 @@ interface SearchPayload {
   }>;
 }
 
-describe("live search", () => {
+// Skipped unless RUN_LIVE_TESTS is set. These hit gradcracker.com for real, and the
+// first one uses keyword search — the mode robots.txt disallows for automation. Running
+// them from CI would mean every push scrapes a third-party site the README says to treat
+// as personal use only. Run them by hand when you need to check the parser still matches
+// the live markup:  RUN_LIVE_TESTS=1 bun run test
+describe.skipIf(!process.env.RUN_LIVE_TESTS)("live search", () => {
   test('keyword search "software engineer" returns real results', async () => {
     const r = await runCLI(["search", "-q", "software engineer", "--limit", "5"]);
     expect(r.exitCode).toBe(0);
