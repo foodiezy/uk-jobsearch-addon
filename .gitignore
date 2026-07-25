@@ -1,0 +1,10 @@
+node_modules/
+__pycache__/
+*.pyc
+
+# Your own job-hunt data — never commit these
+job_scraper/seen_jobs.json
+job_scraper/reports/
+documents/
+*.xlsx
+*.pdf

@@ -1,0 +1,20 @@
+{
+  "name": "prospects-cli",
+  "version": "1.0.0",
+  "description": "CLI for searching Prospects.ac.uk, the UK graduate careers service — public JSON API, zero runtime dependencies. Personal use only.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": {
+    "prospects-search": "src/cli.ts"
+  },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "latest"
+  }
+}
