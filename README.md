@@ -160,6 +160,42 @@ It has to go through `Start-Process -Verb RunAs` with a `-File` script. Calling 
 directly from an agent shell gets Access Denied, and passing the arguments inline mangles the
 quoting.
 
+## 8. Using this without Claude Code
+
+Most of this needs no AI at all. The scraper is Python and Bun: it queries the boards,
+deduplicates, and writes a markdown table. Run it from any terminal, on a schedule, and read
+the report in a text editor. No subscription, no editor integration, nothing to install
+beyond Bun and Python.
+
+An assistant only helps with four things:
+
+| Task | Needs a model? |
+|---|---|
+| Running the scrape, writing the daily report | No — plain code |
+| Turning your CV into the profile files | Yes, once |
+| Rating fits from the daily report | Yes, or do it by eye |
+| Tailoring a CV and cover letter per role | Yes |
+| Compiling the PDFs | No — LaTeX, local |
+
+And that assistant does not have to be Claude Code. The workflow is markdown files on disk,
+not a plugin. Any agentic editor can drive it — Cursor, Copilot's agent mode, Codex, Gemini
+CLI, Antigravity, Zed. This repo ships an `AGENTS.md` at the root, which most of them read
+automatically; tools that don't will pick it up if you say *"read AGENTS.md and CLAUDE.md
+first."*
+
+Two differences to expect away from Claude Code. Skills won't auto-load by name, so point the
+tool at `.claude/skills/job-application-assistant/` once per session. And output quality
+tracks model quality — a weaker free model writes weaker cover letters, which matters more
+here than raw coding ability.
+
+With no agentic tool at all, the fallback still works: run the scrape, open the report, and
+paste one role plus your CV into any chat assistant. One conversation per application.
+
+**Whatever tool you use, open the link before you write anything.** Assistants invent
+plausible job listings. This setup is deliberately built so the model never has to produce a
+listing — real API calls find the jobs, the model only rates and writes — but a fabricated
+role is expensive enough to be worth thirty seconds of checking.
+
 ---
 
 ## Portal quirks — the things that cost us time
