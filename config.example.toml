@@ -37,10 +37,11 @@ blocked_companies = [
 ]
 
 # name -> path to that portal CLI's entrypoint, relative to the repo root.
-# A source's CLI file not existing on disk is not fatal: any query using it is skipped
-# with a warning, so you don't have to install every portal to use this file.
+# reed, gradcracker and prospects ship with this repo and work standalone. linkedin and
+# freehire come from the ai-job-search framework (README section 8); if you haven't
+# installed it, queries using them are skipped with a warning, which is harmless.
 [sources]
-linkedin = ".agents/skills/linkedin-search/cli/src/cli.ts"
+linkedin = ".agents/skills/linkedin-search/cli/src/cli.ts"   # framework only
 reed = ".agents/skills/reed-search/cli/src/cli.ts"          # needs REED_API_KEY (user env var)
 # Browse mode only in scheduled runs: robots.txt disallows /keyword-search, allows /search/*
 gradcracker = ".agents/skills/gradcracker-search/cli/src/cli.ts"

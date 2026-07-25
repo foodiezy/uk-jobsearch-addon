@@ -3,12 +3,16 @@
 This is a job-hunt workspace: it finds job postings automatically, then helps the owner of the
 repo apply to them. You are assisting one person with their own job search.
 
-Read these before doing substantive work:
-- `README.md` — setup, configuration, and the portal quirks
-- `CLAUDE.md` — the candidate profile and application workflow (despite the name, it is plain
-  markdown and applies to any assistant)
-- `.claude/skills/job-application-assistant/` — the profile files, CV and cover letter
-  templates, and the verification checklist
+Works with any agentic editor — Cursor, Antigravity, Copilot, Codex, Gemini CLI, Zed, Claude
+Code. Nothing here is specific to one of them.
+
+Read `README.md` before doing substantive work: setup, configuration, and the portal quirks.
+
+If the user has combined this with the `ai-job-search` framework (see the README's last
+section), also read `CLAUDE.md` and `.claude/skills/job-application-assistant/` — the profile
+files, CV and cover letter templates, and the verification checklist. Those are plain markdown
+and apply to any assistant despite the naming. If those files aren't present, this is a
+standalone scrape setup and the README is all there is.
 
 ## What is code and what is judgement
 

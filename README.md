@@ -2,10 +2,23 @@
 
 [![tests](https://github.com/foodiezy/uk-jobsearch-addon/actions/workflows/tests.yml/badge.svg)](https://github.com/foodiezy/uk-jobsearch-addon/actions/workflows/tests.yml)
 
-Three extra job-board sources and a daily scrape runner for the
-[`MadsLorentzen/ai-job-search`](https://github.com/MadsLorentzen/ai-job-search) Claude Code
-framework. Upstream ships LinkedIn plus several Danish boards; this adds the UK ones and
-wires everything into one morning report.
+A daily job scrape for the UK graduate and junior market. It queries **Reed**, **Gradcracker**
+and **Prospects**, deduplicates against everything it has already shown you, and writes one
+markdown report each morning.
+
+It runs on its own. Python and Bun, no AI, no subscription, no particular editor — or no
+editor at all. Open the report in whatever you like and read it.
+
+If you do want a model involved, point any agentic editor at the report and it will rate the
+roles against your CV: **Cursor**, **Antigravity**, Copilot, Codex, Gemini CLI, Zed. An
+`AGENTS.md` at the repo root tells them how to behave here, and most read it automatically.
+See [Working with an AI assistant](#7-working-with-an-ai-assistant).
+
+It also drops into the
+[`MadsLorentzen/ai-job-search`](https://github.com/MadsLorentzen/ai-job-search) framework as an
+extra set of UK sources, if you want the CV-and-cover-letter workflow that ships with it —
+that's [the last section](#8-optional-the-full-application-writing-workflow), and it's
+optional.
 
 Tuned for a UK computer-science graduate hunting graduate/junior software roles. The search
 queries, the Nottingham radius filters and the Gradcracker discipline are all set for that —
@@ -13,35 +26,31 @@ change them if your hunt is different.
 
 ---
 
-## 1. Install the base framework first
+## 1. Install
 
 ```bash
-git clone https://github.com/MadsLorentzen/ai-job-search
-cd ai-job-search
+git clone https://github.com/foodiezy/uk-jobsearch-addon
+cd uk-jobsearch-addon
 ```
 
-Follow the repo's own `SETUP.md`. Then unzip this kit **on top of** the clone — it only adds
-files, it overwrites nothing:
+Then run `bun install` once in each of the three CLI folders:
 
 ```
-.agents/skills/reed-search/
-.agents/skills/gradcracker-search/
-.agents/skills/prospects-search/
-job_scraper/daily_scrape.py
-job_scraper/register_task.ps1
+.agents/skills/reed-search/cli/
+.agents/skills/gradcracker-search/cli/
+.agents/skills/prospects-search/cli/
 ```
 
 ## 2. Tools you need
 
 | Tool | Why | Note |
 |---|---|---|
-| **Claude Code** | runs the whole thing | |
 | **Bun** | the portal CLIs are TypeScript | installs to `~/.bun/bin` |
 | **Python 3.11+** | `daily_scrape.py` | needs `tomllib` (stdlib since 3.11); on Windows call it as `py`, not `python` — the Microsoft Store alias is a broken stub |
-| **MiKTeX** | compiles CV + cover letter | `pdflatex` for the CV, `xelatex` for cover letters |
-| **poppler** (`pdftotext`) | ATS check on the compiled CV | optional but worth it |
+| An agentic editor | *optional* — rating roles, writing applications | Cursor, Antigravity, Copilot, Codex, Gemini CLI, Claude Code. Any of them, or none |
+| **MiKTeX**, **poppler** | *optional* — only for the LaTeX CV workflow in section 9 | `pdflatex` for the CV, `xelatex` for cover letters |
 
-In each of the three `cli/` folders, run `bun install` once.
+That's it for scraping. Nothing else is required.
 
 ## 3. Get your own Reed API key
 
@@ -56,17 +65,7 @@ Don't use someone else's key — rate limits and terms are tied to the account t
 A shell that was already open won't see the new variable; either reopen it or set
 `$env:REED_API_KEY` inline for that session.
 
-## 4. Put your own details in
-
-The framework reads your profile from `.claude/skills/job-application-assistant/`. Don't fill
-those in by hand — open Claude Code in the repo, paste your CV, and ask it to populate
-`01-candidate-profile.md` and `02-behavioral-profile.md` from it. Then read them back and
-correct anything it inferred wrongly; it marks guesses with `[Inferred — review]`.
-
-Also update `.claude/skills/job-scraper/search-queries.md` and `config.toml` (see below) so
-they agree with each other.
-
-## 5. Configure your search
+## 4. Configure your search
 
 No Python editing required — every user-specific value (queries, portals, filters, tracker
 path) lives in a TOML config file, `config.toml` at the repo root. It's gitignored: copy the
@@ -129,7 +128,7 @@ py job_scraper/daily_scrape.py --dry-run --config examples/denmark.toml
 root. Running with no `config.toml` present and no `--config` given exits with a message
 telling you to copy the example.
 
-## 6. Run it
+## 5. Run it
 
 ```powershell
 py job_scraper/daily_scrape.py
@@ -148,9 +147,9 @@ variable (the env var takes priority, for people who prefer it over editing the 
 
 Leave both unset and the tracker dedupe is simply skipped.
 
-Then each morning, open Claude Code in the repo and say **"review today's scrape report"**.
+Then read `job_scraper/reports/` each morning — by eye, or with an assistant (section 7).
 
-## 7. Schedule it (Windows)
+## 6. Schedule it (Windows)
 
 ```powershell
 Start-Process powershell -Verb RunAs -ArgumentList "-File job_scraper\register_task.ps1"
@@ -160,41 +159,62 @@ It has to go through `Start-Process -Verb RunAs` with a `-File` script. Calling 
 directly from an agent shell gets Access Denied, and passing the arguments inline mangles the
 quoting.
 
-## 8. Using this without Claude Code
+## 7. Working with an AI assistant
 
-Most of this needs no AI at all. The scraper is Python and Bun: it queries the boards,
-deduplicates, and writes a markdown table. Run it from any terminal, on a schedule, and read
-the report in a text editor. No subscription, no editor integration, nothing to install
-beyond Bun and Python.
-
-An assistant only helps with four things:
+Everything above needs no model at all. This part is where one helps:
 
 | Task | Needs a model? |
 |---|---|
 | Running the scrape, writing the daily report | No — plain code |
-| Turning your CV into the profile files | Yes, once |
-| Rating fits from the daily report | Yes, or do it by eye |
+| Rating the day's roles against your CV | Yes, or do it by eye |
 | Tailoring a CV and cover letter per role | Yes |
 | Compiling the PDFs | No — LaTeX, local |
 
-And that assistant does not have to be Claude Code. The workflow is markdown files on disk,
-not a plugin. Any agentic editor can drive it — Cursor, Copilot's agent mode, Codex, Gemini
-CLI, Antigravity, Zed. This repo ships an `AGENTS.md` at the root, which most of them read
-automatically; tools that don't will pick it up if you say *"read AGENTS.md and CLAUDE.md
-first."*
+Open the repo in **Cursor**, **Antigravity**, or any agentic editor — Copilot's agent mode,
+Codex, Gemini CLI, Zed, Claude Code. `AGENTS.md` at the root tells the assistant how to work
+here, and most read it on open. For one that doesn't, start with *"read AGENTS.md first."*
 
-Two differences to expect away from Claude Code. Skills won't auto-load by name, so point the
-tool at `.claude/skills/job-application-assistant/` once per session. And output quality
-tracks model quality — a weaker free model writes weaker cover letters, which matters more
-here than raw coding ability.
+Then paste your CV once, and each morning ask it to triage the newest file in
+`job_scraper/reports/`:
 
-With no agentic tool at all, the fallback still works: run the scrape, open the report, and
-paste one role plus your CV into any chat assistant. One conversation per application.
+> Read AGENTS.md, then rate every role in the newest report in job_scraper/reports/ against
+> my CV. Skip anything that isn't a genuine fit. For the ones worth applying to, tell me why.
 
-**Whatever tool you use, open the link before you write anything.** Assistants invent
-plausible job listings. This setup is deliberately built so the model never has to produce a
-listing — real API calls find the jobs, the model only rates and writes — but a fabricated
-role is expensive enough to be worth thirty seconds of checking.
+Output quality tracks model quality — a weaker free model writes weaker cover letters, and
+that matters more here than coding ability does.
+
+With no agentic tool at all, this still works. Run the scrape, open the report, and paste one
+role plus your CV into any chat window. One conversation per application.
+
+### The one rule that matters
+
+**Open the link before you write anything.** Assistants invent plausible job listings —
+right-sounding company, right-sounding title, no such job. This setup is built so the model
+never has to produce a listing: real API calls find the roles, the model only rates and
+writes. That removes most of the risk, but aggregators also repost roles under misleading
+titles, so thirty seconds on the employer's own careers page is still worth it.
+
+## 8. Optional: the full application-writing workflow
+
+Everything so far finds jobs. If you also want a structured CV-and-cover-letter workflow —
+profile files, LaTeX templates, a verification checklist — this kit drops into
+[`MadsLorentzen/ai-job-search`](https://github.com/MadsLorentzen/ai-job-search) as an extra
+set of UK sources.
+
+That project is built for Claude Code, and its files are named accordingly (`CLAUDE.md`, a
+`.claude/skills/` directory). Nothing in it is Claude-specific beyond the naming — the skills
+are markdown instructions any capable model can read. Other editors just won't auto-load them,
+so point your assistant at `.claude/skills/job-application-assistant/` once per session.
+
+To combine them: clone that repo, follow its `SETUP.md`, then copy this kit's
+`.agents/skills/*` and `job_scraper/*` into the clone. Its LinkedIn and FreeHire CLIs then
+light up the queries in `config.example.toml` that are skipped when running standalone, and
+`.claude/skills/job-scraper/search-queries.md` should be kept in agreement with your
+`config.toml`.
+
+Fill in the profile files by pasting your CV and asking the assistant to populate
+`01-candidate-profile.md` and `02-behavioral-profile.md`, then read them back — it marks
+guesses with `[Inferred — review]`, and it does get things wrong.
 
 ---
 
