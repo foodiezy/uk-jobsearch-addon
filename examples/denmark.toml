@@ -1,0 +1,74 @@
+# For a candidate hunting IT/software jobs in Denmark, using the upstream
+# ai-job-search Danish portals (jobindex, jobnet, jobdanmark, jobbank) instead of the
+# UK ones this repo ships. Those portal CLIs are not part of this repo — install them
+# from the upstream ai-job-search framework first; until then any query below is
+# skipped with a warning rather than failing the run. Flags below are copied from
+# each portal's own SKILL.md; do not add a flag that isn't documented there.
+
+[settings]
+tracker = ""
+tracker_company_column = 2
+tracker_skip_rows = 2
+polite_delay_seconds = 1.5
+query_timeout_seconds = 120
+
+[filters]
+senior_words = [
+    "senior", "lead", "principal", "staff", "head of", "manager",
+    "director", "architect", "chief", "sr.", "sr ",
+]
+blocked_companies = [
+    "Haystack", "Sundayy", "Helic & Co", "Hired", "DiverseJobsMatter", "Manchester Digital",
+]
+
+# name -> path to that portal CLI's entrypoint, relative to the repo root.
+[sources]
+jobindex = ".agents/skills/jobindex-search/cli/src/cli.ts"
+jobnet = ".agents/skills/jobnet-search/cli/src/cli.ts"
+jobdanmark = ".agents/skills/jobdanmark-search/cli/src/cli.ts"
+jobbank = ".agents/skills/jobbank-search/cli/src/cli.ts"
+
+# Jobindex has no area filter via API params — city names go directly in --query
+[[queries]]
+label = "Jobindex softwareudvikler"
+source = "jobindex"
+args = ["search", "--query", "softwareudvikler", "--jobage", "7", "--sort", "date", "--limit", "20"]
+
+[[queries]]
+label = "Jobindex data engineer Copenhagen"
+source = "jobindex"
+args = ["search", "--query", "data engineer københavn", "--jobage", "14", "--sort", "date", "--limit", "20"]
+
+# Jobnet is the official STAR portal; --region values are fixed enum strings, not
+# free-text city names (HovedstadenOgBornholm, Midtjylland, Syddanmark,
+# OevrigeSjaelland, Nordjylland). Don't combine --region and --postal-code.
+[[queries]]
+label = "Jobnet IT Copenhagen region"
+source = "jobnet"
+args = ["search", "--search-string", "udvikler", "--region", "HovedstadenOgBornholm",
+        "--work-hours", "FullTime", "--order", "PublicationDate", "--per-page", "20"]
+
+[[queries]]
+label = "Jobnet IT Aarhus 30km"
+source = "jobnet"
+args = ["search", "--search-string", "udvikler", "--postal-code", "8000", "--radius", "30",
+        "--work-hours", "FullTime", "--order", "PublicationDate", "--per-page", "20"]
+
+# Jobdanmark category 227978 = "IT, Ingeniør og Energi"
+[[queries]]
+label = "Jobdanmark IT category"
+source = "jobdanmark"
+args = ["search", "--category", "227978", "--job-type", "fuldtid", "--limit", "30"]
+
+# Jobbank work-area 31 = IT-Software; suitable-for 2 = Nyuddannede (new graduates);
+# location 2 = Storkobenhavn, 8 = Ostjylland (Aarhus)
+[[queries]]
+label = "Jobbank IT new graduates"
+source = "jobbank"
+args = ["search", "--work-area", "31", "--suitable-for", "2", "--limit", "50"]
+
+[[queries]]
+label = "Jobbank developer Copenhagen or Aarhus"
+source = "jobbank"
+args = ["search", "--key", "developer", "--location", "2", "--location", "8",
+        "--work-area", "31", "--limit", "50"]

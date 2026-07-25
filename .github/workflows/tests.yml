@@ -1,0 +1,41 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run job_scraper tests
+        run: python -m unittest discover job_scraper/tests
+
+  cli-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cli: [reed-search, gradcracker-search, prospects-search]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        working-directory: .agents/skills/${{ matrix.cli }}/cli
+        run: bun install
+      - name: Run tests
+        working-directory: .agents/skills/${{ matrix.cli }}/cli
+        # Each package.json defines "test": "bun test --timeout 30000", but
+        # prospects-search ships no tests/ directory yet — bun test errors on zero
+        # matching test files, so skip cleanly instead of failing CI on nothing to run.
+        run: |
+          if [ -d tests ]; then
+            bun run test
+          else
+            echo "No tests/ directory for ${{ matrix.cli }} - nothing to run."
+          fi

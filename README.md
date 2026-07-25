@@ -1,5 +1,7 @@
 # UK job search add-on kit
 
+[![tests](https://github.com/foodiezy/uk-jobsearch-addon/actions/workflows/tests.yml/badge.svg)](https://github.com/foodiezy/uk-jobsearch-addon/actions/workflows/tests.yml)
+
 Three extra job-board sources and a daily scrape runner for the
 [`MadsLorentzen/ai-job-search`](https://github.com/MadsLorentzen/ai-job-search) Claude Code
 framework. Upstream ships LinkedIn plus several Danish boards; this adds the UK ones and
@@ -35,7 +37,7 @@ job_scraper/register_task.ps1
 |---|---|---|
 | **Claude Code** | runs the whole thing | |
 | **Bun** | the portal CLIs are TypeScript | installs to `~/.bun/bin` |
-| **Python** | `daily_scrape.py` | on Windows call it as `py`, not `python` — the Microsoft Store alias is a broken stub |
+| **Python 3.11+** | `daily_scrape.py` | needs `tomllib` (stdlib since 3.11); on Windows call it as `py`, not `python` — the Microsoft Store alias is a broken stub |
 | **MiKTeX** | compiles CV + cover letter | `pdflatex` for the CV, `xelatex` for cover letters |
 | **poppler** (`pdftotext`) | ATS check on the compiled CV | optional but worth it |
 
@@ -61,10 +63,73 @@ those in by hand — open Claude Code in the repo, paste your CV, and ask it to 
 `01-candidate-profile.md` and `02-behavioral-profile.md` from it. Then read them back and
 correct anything it inferred wrongly; it marks guesses with `[Inferred — review]`.
 
-Also update `.claude/skills/job-scraper/search-queries.md` and the `QUERIES` list at the top of
-`daily_scrape.py` so they agree with each other.
+Also update `.claude/skills/job-scraper/search-queries.md` and `config.toml` (see below) so
+they agree with each other.
 
-## 5. Run it
+## 5. Configure your search
+
+No Python editing required — every user-specific value (queries, portals, filters, tracker
+path) lives in a TOML config file, `config.toml` at the repo root. It's gitignored: copy the
+example and edit your copy.
+
+```powershell
+copy config.example.toml config.toml
+```
+
+Then open `config.toml` and edit the `[[queries]]` blocks, `[filters]`, and `[settings]` to
+match your own search. Schema:
+
+```toml
+[settings]
+tracker = ""                      # optional path to a spreadsheet of roles already applied to
+tracker_company_column = 2        # 0-based column holding the company name
+tracker_skip_rows = 2              # header rows to skip
+polite_delay_seconds = 1.5
+query_timeout_seconds = 120
+
+[filters]
+senior_words = [...]              # titles containing these are dropped
+blocked_companies = [...]         # companies dropped entirely (aggregators, CV harvesters)
+
+[sources]                         # name -> path to that portal CLI's entrypoint, relative to repo root
+linkedin = ".agents/skills/linkedin-search/cli/src/cli.ts"
+reed = ".agents/skills/reed-search/cli/src/cli.ts"
+
+[[queries]]
+label = "LinkedIn UK grad SWE"
+source = "linkedin"
+args = ["search", "-q", "graduate software engineer", "-l", "United Kingdom", "--jobage", "1", "--limit", "20"]
+```
+
+Each `[[queries]]` entry is one portal search: `label` is what shows up in error messages and
+the report, `source` must be a key defined under `[sources]`, and `args` is the exact argv
+passed to that portal's CLI (see each portal's quirks below, and its skill's `SKILL.md` for the
+full flag list). Add a new portal by adding an entry to `[sources]` and one or more
+`[[queries]]` blocks that reference it — no Python changes needed. A source's CLI file not
+being installed is not fatal: any query using it is skipped with a warning at runtime.
+
+Three ready-made configs live in `examples/`:
+
+| File | For |
+|---|---|
+| `examples/uk-grad-swe.toml` | UK CS graduate, software engineering roles (same as `config.example.toml`) |
+| `examples/uk-data-analyst.toml` | UK graduate, data/analyst roles |
+| `examples/denmark.toml` | The upstream Danish portals (jobindex, jobnet, jobdanmark, jobbank) instead of the UK ones |
+
+Copy whichever fits (or `config.example.toml`) to `config.toml` to start from it.
+
+Validate a config and see exactly what would run, without any subprocess or network call:
+
+```powershell
+py job_scraper/daily_scrape.py --dry-run
+py job_scraper/daily_scrape.py --dry-run --config examples/denmark.toml
+```
+
+`--config PATH` points the runner at any config file; omit it to use `config.toml` at the repo
+root. Running with no `config.toml` present and no `--config` given exits with a message
+telling you to copy the example.
+
+## 6. Run it
 
 ```powershell
 py job_scraper/daily_scrape.py
@@ -73,17 +138,19 @@ py job_scraper/daily_scrape.py
 Writes `job_scraper/reports/YYYY-MM-DD.md`. Deduplicates against `job_scraper/seen_jobs.json`,
 which it creates on first run — expect a big first report and much shorter ones after.
 
-Optionally point it at a tracker spreadsheet to also skip roles you've already applied to:
+Optionally point it at a tracker spreadsheet to also skip roles you've already applied to,
+either via the `tracker` setting in `config.toml` or the `JOBSEARCH_TRACKER` environment
+variable (the env var takes priority, for people who prefer it over editing the config file):
 
 ```powershell
 [Environment]::SetEnvironmentVariable("JOBSEARCH_TRACKER", "C:\path\to\your_tracker.xlsx", "User")
 ```
 
-Leave it unset and the tracker dedupe is simply skipped.
+Leave both unset and the tracker dedupe is simply skipped.
 
 Then each morning, open Claude Code in the repo and say **"review today's scrape report"**.
 
-## 6. Schedule it (Windows)
+## 7. Schedule it (Windows)
 
 ```powershell
 Start-Process powershell -Verb RunAs -ArgumentList "-File job_scraper\register_task.ps1"
