@@ -93,9 +93,14 @@ def print_plan(plan):
         print()
 
 
-def is_senior_title(title, senior_words):
+def is_excluded_title(title, excluded_words):
     title = (title or "").lower()
-    return any(w in title for w in senior_words)
+    return any(word and word.lower() in title for word in excluded_words)
+
+
+def get_excluded_title_words(filters):
+    """Read the role-agnostic filter, with compatibility for older configs."""
+    return filters.get("excluded_title_words", filters.get("senior_words", []))
 
 
 def is_blocked_company(company, blocked_companies):
@@ -174,7 +179,7 @@ def main(argv=None):
 
     settings = config.get("settings", {})
     filters = config.get("filters", {})
-    senior_words = tuple(w.lower() for w in filters.get("senior_words", []))
+    excluded_title_words = get_excluded_title_words(filters)
     blocked_companies = filters.get("blocked_companies", [])
     delay = settings.get("polite_delay_seconds", 1.5)
     timeout = settings.get("query_timeout_seconds", 120)
@@ -182,14 +187,15 @@ def main(argv=None):
     tracker_path = get_tracker_path(settings)
     tracked_companies = tracker_keys(
         tracker_path,
-        settings.get("tracker_company_column", 2),
-        settings.get("tracker_skip_rows", 2),
+        settings.get("tracker_company_column", 0),
+        settings.get("tracker_skip_rows", 1),
     )
 
     seen = json.loads(SEEN.read_text(encoding="utf-8")) if SEEN.exists() else {"seen": {}}
     today = date.today().isoformat()
 
     new_jobs, errors = [], []
+    title_filtered_count = 0
     blocked_count = 0
     ran_any = False
     for entry in plan:
@@ -210,7 +216,8 @@ def main(argv=None):
             company = r.get("company") or ""
             if not key or key in seen["seen"]:
                 continue
-            if is_senior_title(title, senior_words):
+            if is_excluded_title(title, excluded_title_words):
+                title_filtered_count += 1
                 continue
             if is_blocked_company(company, blocked_companies):
                 blocked_count += 1
@@ -232,10 +239,14 @@ def main(argv=None):
 
     REPORTS.mkdir(exist_ok=True)
     report = REPORTS / f"{today}.md"
-    lines = [f"# Daily scrape - {today}", "",
-             f"**{len(new_jobs)} new postings** (senior-level titles and "
-             f"{blocked_count} blocked-company postings filtered out; deduped against "
-             f"{len(seen['seen'])} previously seen and the master tracker).", ""]
+    lines = [
+        f"# Daily scrape - {today}",
+        "",
+        f"**{len(new_jobs)} new postings** ({title_filtered_count} title-filtered and "
+        f"{blocked_count} company-filtered postings removed; deduped against "
+        f"{len(seen['seen'])} previously seen postings and the optional tracker).",
+        "",
+    ]
     if new_jobs:
         lines += ["| Title | Company | Location | Posted | Link |",
                   "|---|---|---|---|---|"]
@@ -246,8 +257,10 @@ def main(argv=None):
         lines.append("No new matches today.")
     if errors:
         lines += ["", "## Source errors", ""] + [f"- {e}" for e in errors]
-    lines += ["", "_Review with Claude: open Claude Code in the repo and say "
-              "\"review today's scrape report\" for fit assessment._"]
+    lines += [
+        "",
+        "_Open each original listing before applying; search results can be stale or reposted._",
+    ]
     report.write_text("\n".join(lines), encoding="utf-8")
     print(f"{len(new_jobs)} new jobs -> {report}")
 

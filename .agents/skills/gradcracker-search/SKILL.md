@@ -5,10 +5,10 @@ description: >
   Use this skill whenever the user wants to search Gradcracker
   (gradcracker.com), the UK careers board for STEM students and graduates —
   graduate jobs, graduate schemes, placements/internships, and degree
-  apprenticeships across the United Kingdom. Invoke for UK graduate software
-  engineering roles, tech graduate schemes, STEM placements, or looking up a
+  apprenticeships across the United Kingdom. Invoke for engineering, science,
+  technology, maths, and built-environment schemes or when looking up a
   specific Gradcracker posting. Trigger phrases: gradcracker, UK graduate jobs,
-  graduate scheme, grad scheme, graduate software engineer, STEM jobs UK,
+  graduate scheme, grad scheme, engineering graduate, STEM jobs UK,
   placement year, summer internship UK, degree apprenticeship, "graduate jobs
   in <UK region>".
 context: fork
@@ -40,7 +40,7 @@ robots-disallowed `/out` redirect links — apply URLs are decoded locally.
 ## When to use this skill
 
 - Find UK graduate jobs, placements/internships, or degree apprenticeships
-- Browse a discipline (default: computing-technology) or filter by UK region
+- Browse all disciplines by default, choose a discipline, or filter by UK region
 - Get the full description, deadline, salary, and direct apply link for a posting
 
 ## Commands
@@ -52,10 +52,10 @@ bun run .agents/skills/gradcracker-search/cli/src/cli.ts search [flags]
 ```
 
 Key flags:
-- `--query <text>` / `-q` — site-wide keyword search (e.g. `"software engineer"`). Cannot be combined with `--location`.
-- `--discipline <slug>` / `-d` — browse-mode discipline. Default `computing-technology`. Others: `aerospace`, `chemical-process`, `civil-building`, `electronic-electrical`, `mechanical-engineering`, `science-maths`, `all-disciplines`, …
+- `--query <text>` / `-q` — site-wide keyword search (e.g. `"civil engineer"`). Cannot be combined with `--location`.
+- `--discipline <slug>` / `-d` — browse-mode discipline. Default `all-disciplines`. Options include `aerospace`, `chemical-process`, `civil-building`, `computing-technology`, `electronic-electrical`, `mechanical-engineering`, and `science-maths`.
 - `--type <t>` / `-t` — `all` (default) | `graduate-jobs` | `placements` | `apprenticeships`. Works in both modes.
-- `--location <region>` / `-l` — **browse mode only.** UK region, not city: `east-midlands`, `london` (→ London & South East), `scotland`, `north-west`, `yorkshire`, … With `--query`, include the place in the query text instead (e.g. `-q "software engineer london"`).
+- `--location <region>` / `-l` — **browse mode only.** UK region, not city: `east-midlands`, `london` (→ London & South East), `scotland`, `north-west`, `yorkshire`, … With `--query`, include the place in the query text instead (e.g. `-q "civil engineer london"`).
 - `--jobage <days>` — **not supported by Gradcracker** (no posting dates published, only deadlines). Accepted and ignored for cross-portal compatibility.
 - `--page <n>` — 1-indexed page (~16 results/page browse, ~40/page keyword).
 - `--limit <n>` / `-n` — cap results emitted (client-side).
@@ -76,17 +76,17 @@ and the decoded external apply link.
 ## Usage examples
 
 ```bash
-# Software engineer roles UK-wide (keyword search)
-bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -q "software engineer" --limit 10 --format table
+# Civil engineering roles UK-wide (keyword search)
+bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -q "civil engineer" --limit 10 --format table
 
-# Computing/technology graduate jobs in the East Midlands (Nottingham's region)
+# Graduate jobs from every STEM discipline in the East Midlands
 bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -t graduate-jobs -l east-midlands --format table
 
-# Placement-year / internship roles in computing
-bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -t placements --format table
+# Chemistry placement-year and internship roles
+bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -d science-maths -t placements --format table
 
-# AI/ML keyword search, second page
-bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -q "machine learning" --page 2 --format table
+# Sustainability keyword search, second page
+bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -q "sustainability" --page 2 --format table
 
 # Degree apprenticeships in London & the South East
 bun run .agents/skills/gradcracker-search/cli/src/cli.ts search -t apprenticeships -l london --format table

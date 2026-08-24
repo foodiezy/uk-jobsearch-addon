@@ -20,9 +20,9 @@ bun run test       # bun test (includes 2 live smoke requests)
 
 ```bash
 # Keyword search, UK-wide
-bun run src/cli.ts search -q "software engineer" --limit 10 --format table
+bun run src/cli.ts search -q "civil engineer" --limit 10 --format table
 
-# Browse computing/technology graduate jobs in a UK region
+# Browse graduate jobs from every STEM discipline in a UK region
 bun run src/cli.ts search -t graduate-jobs -l east-midlands --format table
 
 # Full detail (id comes from search results: "<hubId>-<jobId>")

@@ -31,7 +31,7 @@ Authorization: Basic base64("<API_KEY>:")
 | Parameter | Type | Notes |
 |-----------|------|-------|
 | `keywords` | string | Free-text keywords |
-| `locationName` | string | Location free text (e.g. `Nottingham`, `London`) |
+| `locationName` | string | Location free text (e.g. `Bristol`, `London`) |
 | `distanceFromLocation` | int | Distance from `locationName` in **miles**; default 10 |
 | `employerId` | int | Filter to one employer |
 | `employerProfileId` | int | Filter to one employer profile |
@@ -75,8 +75,8 @@ well-known (all published client libraries agree) to return **camelCase**:
       "employerName": "Acme Ltd",
       "employerProfileId": null,
       "employerProfileName": null,
-      "jobTitle": "Graduate Software Engineer",
-      "locationName": "Nottingham",
+      "jobTitle": "Project Coordinator",
+      "locationName": "Bristol",
       "minimumSalary": 28000,
       "maximumSalary": 32000,
       "currency": "GBP",
@@ -84,7 +84,7 @@ well-known (all published client libraries agree) to return **camelCase**:
       "date": "10/07/2026",
       "jobDescription": " ... truncated snippet ... ",
       "applications": 25,
-      "jobUrl": "https://www.reed.co.uk/jobs/graduate-software-engineer/55555555"
+      "jobUrl": "https://www.reed.co.uk/jobs/project-coordinator/55555555"
     }
   ],
   "totalResults": 1234

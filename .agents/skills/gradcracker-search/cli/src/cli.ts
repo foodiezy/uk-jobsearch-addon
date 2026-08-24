@@ -44,13 +44,13 @@ USAGE
   bun run src/cli.ts detail <id|url> [--format json|plain]
 
 SEARCH FLAGS
-  --query, -q <text>       Site-wide keyword search (e.g. "software engineer").
+  --query, -q <text>       Site-wide keyword search (e.g. "civil engineer").
                            Uses Gradcracker's /keyword-search — that path is
                            disallowed by robots.txt; personal, low-volume use only.
   --discipline, -d <slug>  Browse-mode discipline (no --query). Default:
-                           computing-technology. Others: aerospace, chemical-process,
-                           civil-building, electronic-electrical, mechanical-engineering,
-                           science-maths, all-disciplines, ...
+                           all-disciplines. Options include aerospace, chemical-process,
+                           civil-building, computing-technology, electronic-electrical,
+                           mechanical-engineering, science-maths, ...
   --type, -t <type>        all (default) | graduate-jobs | placements | apprenticeships.
                            Works in both modes.
   --location, -l <region>  Browse mode only: UK region facet (e.g. "east-midlands",
@@ -69,9 +69,9 @@ DETAIL
                            full gradcracker.com opportunity URL.
 
 EXAMPLES
-  bun run src/cli.ts search -q "software engineer" --limit 10 --format table
-  bun run src/cli.ts search -d computing-technology -t graduate-jobs -l east-midlands --format table
-  bun run src/cli.ts search -d computing-technology -t placements --format json
+  bun run src/cli.ts search -q "civil engineer" --limit 10 --format table
+  bun run src/cli.ts search -d all-disciplines -t graduate-jobs -l east-midlands --format table
+  bun run src/cli.ts search -d science-maths -t placements --format json
   bun run src/cli.ts detail 1088-81498 --format plain
 
 Personal use only — keep volume low. Results carry deadlines, not posting dates.
@@ -136,7 +136,7 @@ async function main(): Promise<number> {
       discipline:
         typeof flags.discipline === "string"
           ? flags.discipline.toLowerCase().trim().replace(/\s+/g, "-")
-          : "computing-technology",
+          : "all-disciplines",
       type: type as OpportunityType,
       location: typeof flags.location === "string" ? flags.location : undefined,
       page,

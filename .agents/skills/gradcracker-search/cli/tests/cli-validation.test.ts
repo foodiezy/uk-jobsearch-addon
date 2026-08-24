@@ -46,13 +46,13 @@ describe("cli validation (offline)", () => {
   });
 
   test("search combining --query and --location exits 1", async () => {
-    const r = await runCLI(["search", "-q", "software engineer", "-l", "east-midlands"]);
+    const r = await runCLI(["search", "-q", "civil engineer", "-l", "east-midlands"]);
     expect(r.exitCode).toBe(1);
     expect(parseErr(r.stderr).code).toBe("UNSUPPORTED_FLAG");
   });
 
   test("search with an unknown region exits 1 and lists valid regions", async () => {
-    const r = await runCLI(["search", "-l", "nottingham"]);
+    const r = await runCLI(["search", "-l", "bristol"]);
     expect(r.exitCode).toBe(1);
     const err = parseErr(r.stderr);
     expect(err.code).toBe("BAD_LOCATION");

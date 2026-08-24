@@ -1,13 +1,23 @@
 node_modules/
 __pycache__/
 *.pyc
+.env
+.env.*
+!.env.example
 
-# Your own job-hunt data — never commit these
+# Private job-search data — never commit these
 job_scraper/seen_jobs.json
 job_scraper/reports/
+job_scraper/task_install_log.txt
 documents/
 *.xlsx
 *.pdf
+candidate-profile.*
+personal-profile.*
+cv.*
+resume.*
+cover-letter.*
+cover_letter.*
 
-# Your own setup — copy config.example.toml to config.toml and edit it
+# Private setup — copy config.example.toml to config.toml and edit it
 config.toml

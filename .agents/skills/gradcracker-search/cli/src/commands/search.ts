@@ -112,7 +112,7 @@ export async function runSearch(opts: SearchOpts): Promise<number> {
   if (opts.query && opts.location) {
     writeError(
       "Gradcracker's keyword search has no location parameter. Either include the place " +
-        'in --query (e.g. -q "software engineer london"), or drop --query and browse by ' +
+        'in --query (e.g. -q "civil engineer london"), or drop --query and browse by ' +
         "discipline with --location <UK region>.",
       "UNSUPPORTED_FLAG",
     )

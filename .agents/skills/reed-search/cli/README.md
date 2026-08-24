@@ -55,11 +55,11 @@ A `401` from Reed maps to code `INVALID_API_KEY`.
 ## Quick examples
 
 ```bash
-# Graduate software roles near Nottingham (30-mile radius)
-bun run src/cli.ts search -q "graduate software engineer" -l "Nottingham" --distance 30 --format table
+# Project coordinator roles near Bristol (30-mile radius)
+bun run src/cli.ts search -q "project coordinator" -l "Bristol" --distance 30 --format table
 
-# Junior developer roles, Reed's graduate filter, posted in the last 7 days
-bun run src/cli.ts search -q "junior developer" --graduate --jobage 7 --limit 10
+# Marketing roles, Reed's graduate filter, posted in the last 7 days
+bun run src/cli.ts search -q "marketing" --graduate --jobage 7 --limit 10
 
 # Full detail for one job
 bun run src/cli.ts detail 55555555 --format plain
@@ -70,7 +70,7 @@ bun run src/cli.ts detail 55555555 --format plain
 | Flag | Alias | Description |
 |------|-------|-------------|
 | `--query` | `-q` | Keywords (title / skill / role). Maps to Reed's `keywords`. |
-| `--location` | `-l` | Location name (maps to `locationName`), e.g. `"Nottingham"`, `"London"`. |
+| `--location` | `-l` | Location name (maps to `locationName`), e.g. `"Bristol"`, `"London"`. |
 | `--distance` | | Miles from `--location` (maps to `distanceFromLocation`; Reed default 10). |
 | `--graduate` | | Boolean — Reed's `graduate` positions filter. |
 | `--jobage` | | Posted within N days. **Client-side** filter (Reed has no server-side date parameter); undated jobs are dropped when set. |

@@ -7,8 +7,8 @@ description: >
   Reed posting. Best for jobs in the United Kingdom: graduate schemes, junior and
   experienced roles across all sectors, filterable by location (city + radius in
   miles), graduate positions, and salary. Trigger phrases: find UK jobs, jobs on
-  Reed, Reed.co.uk, search Reed, graduate jobs UK, junior developer jobs UK,
-  software jobs in Nottingham/London/Manchester, UK vacancies, jobs near me UK,
+  Reed, Reed.co.uk, search Reed, graduate jobs UK, part-time jobs UK,
+  jobs in Bristol/London/Manchester, UK vacancies, jobs near me UK,
   look up this Reed job posting.
 context: fork
 allowed-tools: Bash(bun run .agents/skills/reed-search/cli/src/cli.ts *)
@@ -49,7 +49,7 @@ bun run .agents/skills/reed-search/cli/src/cli.ts search [flags]
 
 Key flags:
 - `--query <text>` / `-q <text>` — keywords (title, skill, role). Maps to Reed's `keywords`.
-- `--location <text>` / `-l <text>` — UK place name, e.g. `"Nottingham"`, `"London"`, `"Manchester"`. Maps to `locationName`.
+- `--location <text>` / `-l <text>` — UK place name, e.g. `"Bristol"`, `"London"`, `"Manchester"`. Maps to `locationName`.
 - `--distance <miles>` — radius from `--location` (Reed's `distanceFromLocation`; Reed defaults to 10 miles).
 - `--graduate` — only graduate positions (Reed's server-side `graduate` filter).
 - `--jobage <days>` — posted within N days. **Client-side**: Reed's API has no posting-age parameter, so the CLI filters on each result's `date`; jobs without a parseable date are dropped when this flag is set.
@@ -71,17 +71,17 @@ type, posted/expiry dates, and the external apply URL when present.
 ## Usage examples
 
 ```bash
-# Graduate software roles within 30 miles of Nottingham
-bun run .agents/skills/reed-search/cli/src/cli.ts search -q "graduate software engineer" -l "Nottingham" --distance 30 --format table
+# Project coordinator roles within 30 miles of Bristol
+bun run .agents/skills/reed-search/cli/src/cli.ts search -q "project coordinator" -l "Bristol" --distance 30 --format table
 
-# Junior developer roles anywhere in the UK, graduate filter, last 7 days
-bun run .agents/skills/reed-search/cli/src/cli.ts search -q "junior developer" --graduate --jobage 7 --limit 10 --format table
+# Graduate marketing roles anywhere in the UK, posted in the last 7 days
+bun run .agents/skills/reed-search/cli/src/cli.ts search -q "marketing" --graduate --jobage 7 --limit 10 --format table
 
-# Front-end roles in London
-bun run .agents/skills/reed-search/cli/src/cli.ts search -q "react typescript" -l "London" --format table
+# Part-time administration roles in London
+bun run .agents/skills/reed-search/cli/src/cli.ts search -q "part time administrator" -l "London" --format table
 
 # Remote-ish: Reed treats remote as a keyword, not a parameter
-bun run .agents/skills/reed-search/cli/src/cli.ts search -q "remote junior software engineer" --limit 10
+bun run .agents/skills/reed-search/cli/src/cli.ts search -q "remote customer service" --limit 10
 
 # Full details for a specific job
 bun run .agents/skills/reed-search/cli/src/cli.ts detail 55555555 --format plain

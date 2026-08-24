@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         working-directory: .agents/skills/${{ matrix.cli }}/cli
         run: bun install
+      - name: Typecheck
+        working-directory: .agents/skills/${{ matrix.cli }}/cli
+        run: bun run typecheck
       - name: Run tests
         working-directory: .agents/skills/${{ matrix.cli }}/cli
         # RUN_LIVE_TESTS is deliberately not set: the suites that make real requests to

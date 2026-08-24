@@ -6,17 +6,17 @@ import { buildDetailUrl } from "../src/commands/detail";
 
 const CARD_FIXTURE = `
 <article wire:key="78925" class="tw-relative">
-  <figure><a href="https://www.gradcracker.com/hub/973/sigma-labs"><img alt="Sigma Labs" src="x.png"/></a></figure>
+  <figure><a href="https://www.gradcracker.com/hub/973/example-engineering"><img alt="Example Engineering" src="x.png"/></a></figure>
   <h2><a
-    href="https://www.gradcracker.com/hub/973/sigma-labs/graduate-job/78925/graduate-technology-consultant"
+    href="https://www.gradcracker.com/hub/973/example-engineering/graduate-job/78925/graduate-sustainability-consultant"
     class="tw-block"
-    aria-label="Apply for the Graduate Technology Consultant opportunity with Sigma Labs"
+    aria-label="Apply for the Graduate Sustainability Consultant opportunity with Example Engineering"
     data-mk-section="Job Card"
     data-mk-label="Job Title"
   >
-    Graduate Technology Consultant
+    Graduate Sustainability Consultant
   </a></h2>
-  <h3 class="tw-mt-1.5">Data Science, Computer Science, Software.</h3>
+  <h3 class="tw-mt-1.5">Environmental Science, Chemistry, Civil Engineering.</h3>
   <div>Deadline: August 2nd, 2026</div>
   <dl>
     <div><dt>Salary</dt><dd>&pound;30,000</dd></div>
@@ -27,9 +27,9 @@ const CARD_FIXTURE = `
   <p>malformed card with no job link — must not break parsing</p>
 </article>
 <article>
-  <a href="https://www.gradcracker.com/hub/820/jane-street/work-placement-internship/71257/tools-internship"
-     aria-label="Apply for the Tools Internship opportunity with Jane Street"
-     data-mk-label="Job Title">Tools Internship</a>
+  <a href="https://www.gradcracker.com/hub/820/example-labs/work-placement-internship/71257/laboratory-internship"
+     aria-label="Apply for the Laboratory Internship opportunity with Example Labs"
+     data-mk-label="Job Title">Laboratory Internship</a>
   <div>Deadline: Ongoing</div>
 </article>
 `;
@@ -41,16 +41,16 @@ describe("parseJobCards", () => {
 
     const [a, b] = cards;
     expect(a.id).toBe("973-78925");
-    expect(a.title).toBe("Graduate Technology Consultant");
-    expect(a.company).toBe("Sigma Labs");
+    expect(a.title).toBe("Graduate Sustainability Consultant");
+    expect(a.company).toBe("Example Engineering");
     expect(a.location).toBe("Multiple UK Locations");
     expect(a.salary).toBe("£30,000");
     expect(a.deadline).toBe("2026-08-02");
     expect(a.date).toBeNull();
     expect(a.type).toBe("graduate-job");
-    expect(a.disciplines).toBe("Data Science, Computer Science, Software");
+    expect(a.disciplines).toBe("Environmental Science, Chemistry, Civil Engineering");
     expect(a.url).toBe(
-      "https://www.gradcracker.com/hub/973/sigma-labs/graduate-job/78925/graduate-technology-consultant"
+      "https://www.gradcracker.com/hub/973/example-engineering/graduate-job/78925/graduate-sustainability-consultant"
     );
 
     expect(b.id).toBe("820-71257");
@@ -77,24 +77,24 @@ describe("removeNotBodyContent", () => {
 });
 
 describe("buildUrl", () => {
-  const base = { discipline: "computing-technology", type: "all" as const, page: 1, format: "json" as const };
+  const base = { discipline: "all-disciplines", type: "all" as const, page: 1, format: "json" as const };
 
   test("keyword mode hits /keyword-search with all type toggles", () => {
-    const url = buildUrl({ ...base, query: "software engineer" });
+    const url = buildUrl({ ...base, query: "civil engineer" });
     expect(url).toContain("/keyword-search?");
-    expect(url).toContain("query=software+engineer");
+    expect(url).toContain("query=civil+engineer");
     expect(url).toContain("jobs=1");
     expect(url).toContain("placements=1");
     expect(url).toContain("degree-apprenticeships=1");
   });
 
   test("browse mode builds discipline/facet paths", () => {
-    expect(buildUrl(base)).toBe("https://www.gradcracker.com/search/computing-technology/engineering-jobs");
+    expect(buildUrl(base)).toBe("https://www.gradcracker.com/search/all-disciplines/engineering-jobs");
     expect(buildUrl({ ...base, type: "graduate-jobs", location: "East Midlands" })).toBe(
-      "https://www.gradcracker.com/search/computing-technology/graduate-jobs-in-east-midlands"
+      "https://www.gradcracker.com/search/all-disciplines/graduate-jobs-in-east-midlands"
     );
     expect(buildUrl({ ...base, type: "placements", page: 3 })).toBe(
-      "https://www.gradcracker.com/search/computing-technology/work-placements-internships?page=3"
+      "https://www.gradcracker.com/search/all-disciplines/work-placements-internships?page=3"
     );
   });
 });
@@ -103,7 +103,7 @@ describe("regionSlug", () => {
   test("normalizes and aliases", () => {
     expect(regionSlug("East Midlands")).toBe("east-midlands");
     expect(regionSlug("london")).toBe("london-and-south-east");
-    expect(regionSlug("Nottingham")).toBeNull();
+    expect(regionSlug("Bristol")).toBeNull();
   });
 });
 
@@ -113,8 +113,8 @@ describe("buildDetailUrl", () => {
       "https://www.gradcracker.com/hub/1088/x/graduate-job/81498/x"
     );
     expect(
-      buildDetailUrl("https://www.gradcracker.com/hub/820/jane-street/graduate-job/72110/software-engineer")
-    ).toBe("https://www.gradcracker.com/hub/820/jane-street/graduate-job/72110/software-engineer");
+      buildDetailUrl("https://www.gradcracker.com/hub/820/example-group/graduate-job/72110/civil-engineer")
+    ).toBe("https://www.gradcracker.com/hub/820/example-group/graduate-job/72110/civil-engineer");
     expect(buildDetailUrl("81498")).toBeNull();
   });
 });

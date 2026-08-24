@@ -5,9 +5,9 @@ description: >
   Use this skill whenever the user wants to search Prospects
   (prospects.ac.uk), the UK graduate careers service run by Jisc — graduate
   jobs, graduate schemes, and internships across the United Kingdom. Invoke
-  for UK graduate software engineering roles, graduate schemes, or internship
+  for graduate roles across sectors, graduate schemes, or internship
   searches. Trigger phrases: prospects, prospects.ac.uk, UK graduate jobs,
-  graduate scheme, graduate software engineer, internship UK, "graduate jobs
+  graduate scheme, graduate marketing, internship UK, "graduate jobs
   on prospects".
 context: fork
 allowed-tools: Bash(bun run .agents/skills/prospects-search/cli/src/cli.ts *)
@@ -36,13 +36,13 @@ requests covers it.
 ## Commands
 
 ```bash
-bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "software engineer" [flags]
+bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "marketing" [flags]
 ```
 
 Flags:
 - `--query <text>` / `-q` — keyword search (**required**). The board only
-  lists graduate-level roles, so plain role names work ("software engineer",
-  "junior developer") — no need to prefix "graduate".
+  lists graduate-level roles, so plain role names work ("marketing",
+  "policy adviser") — no need to prefix "graduate".
 - `--sort dp|rl` / `-s` — `dp` = date posted, newest first (default);
   `rl` = relevance.
 - `--page <n>` — 1-indexed page (max 40 results/page).
@@ -57,14 +57,14 @@ Flags:
 ## Usage examples
 
 ```bash
-# Newest software roles UK-wide
-bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "software engineer" --limit 20 --format table
+# Newest marketing roles UK-wide
+bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "marketing" --limit 20 --format table
 
-# Junior developer roles, JSON for scripting
-bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "junior developer" --format json
+# Human resources roles, JSON for scripting
+bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "human resources" --format json
 
-# Relevance-ranked data roles
-bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "data analyst" --sort rl --limit 10
+# Relevance-ranked finance roles
+bun run .agents/skills/prospects-search/cli/src/cli.ts search -q "finance" --sort rl --limit 10
 ```
 
 ## Output shape

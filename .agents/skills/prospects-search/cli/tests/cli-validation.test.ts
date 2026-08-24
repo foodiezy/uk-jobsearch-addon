@@ -50,7 +50,7 @@ describe("cli validation (offline)", () => {
   });
 
   test("search with non-numeric --page exits 1 with BAD_ARG", async () => {
-    const r = await runCLI(["search", "-q", "software engineer", "--page", "two"]);
+    const r = await runCLI(["search", "-q", "marketing", "--page", "two"]);
     expect(r.exitCode).toBe(1);
     const err = parseErr(r.stderr);
     expect(err.code).toBe("BAD_ARG");
@@ -58,7 +58,7 @@ describe("cli validation (offline)", () => {
   });
 
   test("search with non-numeric --limit (-n) exits 1 with BAD_ARG", async () => {
-    const r = await runCLI(["search", "-q", "software engineer", "-n", "lots"]);
+    const r = await runCLI(["search", "-q", "marketing", "-n", "lots"]);
     expect(r.exitCode).toBe(1);
     const err = parseErr(r.stderr);
     expect(err.code).toBe("BAD_ARG");
@@ -66,7 +66,7 @@ describe("cli validation (offline)", () => {
   });
 
   test("search with non-numeric --jobage exits 1 with BAD_ARG", async () => {
-    const r = await runCLI(["search", "-q", "software engineer", "--jobage", "soon"]);
+    const r = await runCLI(["search", "-q", "marketing", "--jobage", "soon"]);
     expect(r.exitCode).toBe(1);
     const err = parseErr(r.stderr);
     expect(err.code).toBe("BAD_ARG");
@@ -74,7 +74,7 @@ describe("cli validation (offline)", () => {
   });
 
   test("search with an invalid --sort (-s) exits 1 with BAD_ARG", async () => {
-    const r = await runCLI(["search", "-q", "software engineer", "-s", "newest"]);
+    const r = await runCLI(["search", "-q", "marketing", "-s", "newest"]);
     expect(r.exitCode).toBe(1);
     const err = parseErr(r.stderr);
     expect(err.code).toBe("BAD_ARG");

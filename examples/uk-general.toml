@@ -1,0 +1,36 @@
+# Mixed-sector UK example. Copy to config.toml and customise every query.
+
+[settings]
+tracker = ""
+tracker_company_column = 0
+tracker_skip_rows = 1
+polite_delay_seconds = 1.5
+query_timeout_seconds = 120
+
+[filters]
+excluded_title_words = []
+blocked_companies = []
+
+[sources]
+reed = ".agents/skills/reed-search/cli/src/cli.ts"
+prospects = ".agents/skills/prospects-search/cli/src/cli.ts"
+
+[[queries]]
+label = "Reed operations assistant"
+source = "reed"
+args = ["search", "-q", "operations assistant", "--jobage", "7", "--limit", "25"]
+
+[[queries]]
+label = "Reed customer service advisor"
+source = "reed"
+args = ["search", "-q", "customer service advisor", "--jobage", "7", "--limit", "25"]
+
+[[queries]]
+label = "Reed sales executive"
+source = "reed"
+args = ["search", "-q", "sales executive", "--jobage", "7", "--limit", "25"]
+
+[[queries]]
+label = "Prospects marketing"
+source = "prospects"
+args = ["search", "-q", "marketing", "--limit", "20"]

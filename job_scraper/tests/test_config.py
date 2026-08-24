@@ -25,7 +25,15 @@ class LoadConfigTests(unittest.TestCase):
         self.assertIn("sources", config)
         self.assertIn("queries", config)
         self.assertGreater(len(config["queries"]), 0)
-        self.assertIn("linkedin", config["sources"])
+        self.assertIn("reed", config["sources"])
+        self.assertEqual(config["filters"]["excluded_title_words"], [])
+
+    def test_all_public_example_configs_are_valid(self):
+        for path in sorted((REPO / "examples").glob("*.toml")):
+            with self.subTest(path=path.name):
+                config = daily_scrape.load_config(path)
+                daily_scrape.validate_queries(config["queries"], config["sources"])
+                self.assertGreater(len(config["queries"]), 0)
 
     def test_missing_config_file_raises_clear_error(self):
         missing = REPO / "job_scraper" / "tests" / "does-not-exist.toml"
@@ -75,35 +83,44 @@ class BuildPlanTests(unittest.TestCase):
         self.assertTrue(plan[0]["exists"])
 
 
-class SeniorWordFilterTests(unittest.TestCase):
-    def setUp(self):
-        self.senior_words = tuple(w.lower() for w in [
-            "senior", "lead", "principal", "staff", "head of", "manager",
-            "director", "architect", "chief", "sr.", "sr ",
-        ])
+class ExcludedTitleFilterTests(unittest.TestCase):
+    def test_drops_only_words_the_user_configured(self):
+        excluded_words = ["director", "chief"]
+        for title in ["Finance Director", "Chief Operating Officer"]:
+            self.assertTrue(
+                daily_scrape.is_excluded_title(title, excluded_words),
+                msg=f"expected {title!r} to be dropped",
+            )
 
-    def test_drops_senior_titles(self):
-        for title in ["Senior Software Engineer", "Lead Developer",
-                      "Head of Engineering", "Engineering Manager",
-                      "Principal Engineer", "Sr. Software Engineer"]:
-            self.assertTrue(daily_scrape.is_senior_title(title, self.senior_words),
-                             msg=f"expected {title!r} to be dropped")
+    def test_does_not_assume_a_sector_or_seniority(self):
+        excluded_words = ["director", "chief"]
+        for title in [
+            "Staff Nurse",
+            "Store Manager",
+            "Senior Social Worker",
+            "Project Coordinator",
+        ]:
+            self.assertFalse(
+                daily_scrape.is_excluded_title(title, excluded_words),
+                msg=f"expected {title!r} to pass through",
+            )
 
-    def test_keeps_junior_and_unmarked_titles(self):
-        for title in ["Junior Software Engineer", "Graduate Software Engineer",
-                      "Software Developer", "Data Analyst"]:
-            self.assertFalse(daily_scrape.is_senior_title(title, self.senior_words),
-                              msg=f"expected {title!r} to pass through")
+    def test_reads_legacy_senior_words_for_existing_private_configs(self):
+        self.assertEqual(
+            daily_scrape.get_excluded_title_words({"senior_words": ["director"]}),
+            ["director"],
+        )
+
+    def test_blank_exclusion_does_not_hide_every_job(self):
+        self.assertFalse(daily_scrape.is_excluded_title("Staff Nurse", [""]))
 
 
 class BlockedCompanyFilterTests(unittest.TestCase):
     def setUp(self):
-        self.blocked = ["Haystack", "Sundayy", "Helic & Co", "Hired",
-                        "DiverseJobsMatter", "Manchester Digital"]
+        self.blocked = ["Example Aggregator", "Sample Recruiter"]
 
     def test_drops_blocked_companies_case_insensitively(self):
-        for company in ["Haystack", "haystack", "SUNDAYY", "Helic & Co",
-                        "Hired", "DiverseJobsMatter Ltd", "Manchester Digital"]:
+        for company in ["Example Aggregator", "example aggregator ltd", "SAMPLE RECRUITER"]:
             self.assertTrue(daily_scrape.is_blocked_company(company, self.blocked),
                              msg=f"expected {company!r} to be dropped")
 

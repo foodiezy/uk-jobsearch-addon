@@ -57,7 +57,7 @@ USAGE
 
 SEARCH FLAGS
   --query, -q <text>      Keywords (job title, skill, role).
-  --location, -l <text>   Location name, e.g. "Nottingham", "London".
+  --location, -l <text>   Location name, e.g. "Bristol", "London".
   --distance <miles>      Radius from --location in miles (Reed default: 10).
   --graduate              Only graduate positions (Reed's graduate filter).
   --jobage <days>         Posted within N days (client-side filter — Reed's API
@@ -67,8 +67,8 @@ SEARCH FLAGS
   --format <fmt>          json (default) | table | plain.
 
 EXAMPLES
-  bun run src/cli.ts search -q "graduate software engineer" -l "Nottingham" --distance 30 --format table
-  bun run src/cli.ts search -q "junior developer" --graduate --jobage 7 --limit 10
+  bun run src/cli.ts search -q "project coordinator" -l "Bristol" --distance 30 --format table
+  bun run src/cli.ts search -q "marketing" --graduate --jobage 7 --limit 10
   bun run src/cli.ts detail 55555555 --format plain
 `
 

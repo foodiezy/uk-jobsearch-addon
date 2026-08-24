@@ -16,7 +16,7 @@ function parsedStderr(stderr: string): { error?: string; code?: string } {
 
 describe("reed CLI: API key handling", () => {
   test("search without REED_API_KEY exits 1 with NO_API_KEY JSON on stderr", async () => {
-    const result = await runCLI(["search", "-q", "graduate software engineer"], NO_KEY);
+    const result = await runCLI(["search", "-q", "project coordinator"], NO_KEY);
     expect(result.exitCode).toBe(1);
     expect(result.stdout).toBe("");
     const err = parsedStderr(result.stderr);
@@ -87,7 +87,7 @@ describe("reed CLI: flag validation (before key check, no network)", () => {
 
   test("valid flags reach the key check (NO_API_KEY, not BAD_ARG/BAD_FLAG)", async () => {
     const result = await runCLI(
-      ["search", "-q", "junior developer", "-l", "Nottingham", "--distance", "30", "--graduate", "--jobage", "7", "--page", "1", "--limit", "5", "--format", "table"],
+      ["search", "-q", "marketing", "-l", "Bristol", "--distance", "30", "--graduate", "--jobage", "7", "--page", "1", "--limit", "5", "--format", "table"],
       NO_KEY,
     );
     expect(result.exitCode).toBe(1);

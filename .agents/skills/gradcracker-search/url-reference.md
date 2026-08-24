@@ -60,7 +60,7 @@ GET https://www.gradcracker.com/search/<discipline>/<facet>[?page=<n>]
 GET https://www.gradcracker.com/keyword-search?query=<text>[&jobs=1][&placements=1][&degree-apprenticeships=1][&page=<n>]
 ```
 
-- `query`: free text (`software engineer`). No location parameter exists.
+- `query`: free text (`civil engineer`). No location parameter exists.
 - `jobs` / `placements` / `degree-apprenticeships` = `1`: opportunity-type
   toggles (CLI maps `--type`).
 - `page`: 1-indexed, ~40 cards/page. Total shown as `NNN results` in the page.
@@ -76,7 +76,7 @@ One `<article>` per opportunity (browse cards also carry
 | id / url / type | title anchor `href="https://www.gradcracker.com/hub/<hubId>/<company-slug>/<type>/<jobId>/<job-slug>"` with `data-mk-label="Job Title"` in the same tag. `<type>` ∈ `graduate-job` \| `work-placement-internship` \| `degree-apprenticeship`. CLI id = `<hubId>-<jobId>` |
 | title | inner text of that anchor |
 | company | `aria-label="Apply for the … opportunity with <Company>"` on the title anchor; fallback: logo `<img alt="<Company>">` |
-| disciplines | first `<h3>` in the card (e.g. `Data Science, Computer Science, Software.`) |
+| disciplines | first `<h3>` in the card (e.g. `Chemistry, Environmental Science, Civil Engineering.`) |
 | deadline | badge text `Deadline: August 2nd, 2026` or `Deadline: Ongoing` |
 | location / salary / degree / starting | `<dl>` pairs: `<dt>Location</dt><dd>…</dd>`, `<dt>Salary</dt>…`, `<dt>Degree required</dt>…`, `<dt>Starting</dt>…` |
 

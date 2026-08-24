@@ -38,10 +38,10 @@ describe("joinLocations", () => {
 
   test("a handful of facets are joined with commas", () => {
     const locs = [
-      { tnr: 1, text: "Nottingham" },
+      { tnr: 1, text: "Bristol" },
       { tnr: 2, text: "London" },
     ];
-    expect(joinLocations(locs)).toBe("Nottingham, London");
+    expect(joinLocations(locs)).toBe("Bristol, London");
   });
 
   test("exactly 4 facets are joined in full (no truncation)", () => {
@@ -82,30 +82,30 @@ describe("toJobCard (response normalisation into the common result shape)", () =
   test("maps a fully-populated job", () => {
     const job = mkApiJob({
       id: 123,
-      title: "  Graduate Software Engineer  ",
+      title: "  Graduate Marketing Executive  ",
       employer: { name: " Acme Ltd " },
       salary: { tnr: 1, text: " £25,000 - £30,000 " },
       location: [
-        { tnr: 1, text: "Nottingham" },
+        { tnr: 1, text: "Bristol" },
         { tnr: 2, text: "London" },
       ],
       typeOfJob: { tnr: 1, text: " graduate job " },
       closingDate: Date.UTC(2026, 7, 20), // 20 Aug 2026
       continuousRecruitment: false,
       isNew: true,
-      jobSlug: "graduate-software-engineer",
+      jobSlug: "graduate-marketing-executive",
     });
     const card = toJobCard(job);
     expect(card.id).toBe("123");
-    expect(card.title).toBe("Graduate Software Engineer");
+    expect(card.title).toBe("Graduate Marketing Executive");
     expect(card.company).toBe("Acme Ltd");
-    expect(card.location).toBe("Nottingham, London");
+    expect(card.location).toBe("Bristol, London");
     expect(card.salary).toBe("£25,000 - £30,000");
     expect(card.type).toBe("graduate job");
     expect(card.deadline).toBe("2026-08-20");
     expect(card.isNew).toBe(true);
     expect(card.url).toBe(
-      "https://www.prospects.ac.uk/graduate-jobs/graduate-software-engineer-123"
+      "https://www.prospects.ac.uk/graduate-jobs/graduate-marketing-executive-123"
     );
   });
 
@@ -144,19 +144,19 @@ describe("toJobCard (response normalisation into the common result shape)", () =
       jobs: [
         mkApiJob({
           id: 1,
-          title: "Junior Developer",
+          title: "Operations Assistant",
           employer: { name: "Beta Plc" },
           closingDate: null,
           continuousRecruitment: true,
-          jobSlug: "junior-developer",
+          jobSlug: "operations-assistant",
         }),
         mkApiJob({
           id: 2,
-          title: "Data Analyst",
+          title: "Policy Adviser",
           employer: { name: "Gamma Inc" },
           location: Array.from({ length: 10 }, (_, i) => ({ tnr: i, text: `R${i}` })),
           closingDate: Date.UTC(2026, 8, 1),
-          jobSlug: "data-analyst",
+          jobSlug: "policy-adviser",
         }),
       ],
     };
@@ -188,12 +188,12 @@ describe("requestSize (client-side floor/ceiling around the API's --size)", () =
 });
 
 describe("buildUrl", () => {
-  const base: SearchOpts = { query: "software engineer", sort: "dp", page: 1, limit: 20, format: "json" };
+  const base: SearchOpts = { query: "marketing", sort: "dp", page: 1, limit: 20, format: "json" };
 
   test("uses the singular 'keyword' param — 'keywords' is silently ignored by the API", () => {
     const url = new URL(buildUrl(base));
     expect(url.origin + url.pathname).toBe("https://www.prospects.ac.uk/api/jobs");
-    expect(url.searchParams.get("keyword")).toBe("software engineer");
+    expect(url.searchParams.get("keyword")).toBe("marketing");
     expect(url.searchParams.has("keywords")).toBe(false);
   });
 

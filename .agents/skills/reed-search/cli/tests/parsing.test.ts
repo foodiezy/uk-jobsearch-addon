@@ -36,8 +36,8 @@ describe("normalizeSearchResult", () => {
   const raw = {
     jobId: 55555555,
     employerName: "Acme Ltd",
-    jobTitle: "Graduate Software Engineer",
-    locationName: "Nottingham",
+    jobTitle: "Project Coordinator",
+    locationName: "Bristol",
     minimumSalary: 28000,
     maximumSalary: 32000,
     currency: "GBP",
@@ -45,17 +45,17 @@ describe("normalizeSearchResult", () => {
     date: "10/07/2026",
     jobDescription: "snippet...",
     applications: 25,
-    jobUrl: "https://www.reed.co.uk/jobs/graduate-software-engineer/55555555",
+    jobUrl: "https://www.reed.co.uk/jobs/project-coordinator/55555555",
   };
 
   test("maps Reed field names to the portal-skill contract", () => {
     const r = normalizeSearchResult(raw)!;
     expect(r.id).toBe("55555555");
-    expect(r.title).toBe("Graduate Software Engineer");
+    expect(r.title).toBe("Project Coordinator");
     expect(r.company).toBe("Acme Ltd");
-    expect(r.location).toBe("Nottingham");
+    expect(r.location).toBe("Bristol");
     expect(r.date).toBe("2026-07-10");
-    expect(r.url).toBe("https://www.reed.co.uk/jobs/graduate-software-engineer/55555555");
+    expect(r.url).toBe("https://www.reed.co.uk/jobs/project-coordinator/55555555");
     expect(r.salaryMin).toBe(28000);
     expect(r.salaryMax).toBe(32000);
     expect(r.currency).toBe("GBP");
@@ -84,13 +84,13 @@ describe("normalizeDetail", () => {
     const d = normalizeDetail(
       {
         jobId: 777,
-        jobTitle: "Junior Developer",
+        jobTitle: "Operations Assistant",
         employerName: "Beta Plc",
         datePosted: "05/07/2026",
         applicationCount: 12,
         contractType: "Permanent",
         fullTime: true,
-        jobDescription: "<p>Build &amp; ship.</p><ul><li>TypeScript</li><li>React</li></ul>",
+        jobDescription: "<p>Coordinate &amp; deliver.</p><ul><li>Planning</li><li>Reporting</li></ul>",
         externalUrl: "https://apply.example.com/777",
       },
       "777",
@@ -99,8 +99,8 @@ describe("normalizeDetail", () => {
     expect(d.applications).toBe(12);
     expect(d.contractType).toBe("Permanent");
     expect(d.fullTime).toBe(true);
-    expect(d.description).toContain("Build & ship.");
-    expect(d.description).toContain("- TypeScript");
+    expect(d.description).toContain("Coordinate & deliver.");
+    expect(d.description).toContain("- Planning");
     expect(d.description).not.toContain("<");
     expect(d.externalUrl).toBe("https://apply.example.com/777");
   });
@@ -133,11 +133,11 @@ describe("filterByAge (client-side --jobage)", () => {
 describe("buildSearchUrl", () => {
   test("maps flags to Reed's documented parameters", () => {
     const url = new URL(
-      buildSearchUrl({ query: "graduate software engineer", location: "Nottingham", distance: 30, graduate: true, page: 2 }),
+      buildSearchUrl({ query: "project coordinator", location: "Bristol", distance: 30, graduate: true, page: 2 }),
     );
     expect(url.origin + url.pathname).toBe("https://www.reed.co.uk/api/1.0/search");
-    expect(url.searchParams.get("keywords")).toBe("graduate software engineer");
-    expect(url.searchParams.get("locationName")).toBe("Nottingham");
+    expect(url.searchParams.get("keywords")).toBe("project coordinator");
+    expect(url.searchParams.get("locationName")).toBe("Bristol");
     expect(url.searchParams.get("distanceFromLocation")).toBe("30");
     expect(url.searchParams.get("graduate")).toBe("true");
     expect(url.searchParams.get("resultsToTake")).toBe(String(RESULTS_PER_PAGE));
@@ -159,8 +159,8 @@ describe("normalizeId", () => {
     expect(normalizeId("55555555")).toBe("55555555");
   });
   test("reed.co.uk job URL", () => {
-    expect(normalizeId("https://www.reed.co.uk/jobs/graduate-software-engineer/55555555")).toBe("55555555");
-    expect(normalizeId("https://www.reed.co.uk/jobs/graduate-software-engineer/55555555?source=search")).toBe("55555555");
+    expect(normalizeId("https://www.reed.co.uk/jobs/project-coordinator/55555555")).toBe("55555555");
+    expect(normalizeId("https://www.reed.co.uk/jobs/project-coordinator/55555555?source=search")).toBe("55555555");
   });
   test("garbage → null", () => {
     expect(normalizeId("not-a-job")).toBeNull();

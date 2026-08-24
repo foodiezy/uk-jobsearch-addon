@@ -42,7 +42,7 @@ USAGE
   bun run src/cli.ts search -q <keywords> [flags]
 
 SEARCH FLAGS
-  --query, -q <text>    Keyword search (required), e.g. "software engineer".
+  --query, -q <text>    Keyword search (required), e.g. "marketing".
                         Prospects lists graduate jobs/schemes and internships
                         only — no need to add "graduate" to the query.
   --sort, -s <mode>     dp (date posted, newest first — default) | rl (relevance).
@@ -57,9 +57,9 @@ SEARCH FLAGS
   --format <fmt>        json (default) | table | plain.
 
 EXAMPLES
-  bun run src/cli.ts search -q "software engineer" --limit 20 --format table
-  bun run src/cli.ts search -q "junior developer" --format json
-  bun run src/cli.ts search -q "data analyst" --sort rl --limit 10
+  bun run src/cli.ts search -q "marketing" --limit 20 --format table
+  bun run src/cli.ts search -q "human resources" --format json
+  bun run src/cli.ts search -q "finance" --sort rl --limit 10
 
 Personal use only — keep volume low. Results carry closing dates, not posting dates.
 `

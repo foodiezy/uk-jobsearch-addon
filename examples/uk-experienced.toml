@@ -1,0 +1,31 @@
+# Experienced-role UK example. Copy to config.toml and customise every query.
+
+[settings]
+tracker = ""
+tracker_company_column = 0
+tracker_skip_rows = 1
+polite_delay_seconds = 1.5
+query_timeout_seconds = 120
+
+[filters]
+# Use exclusions only if they are outside your target seniority.
+excluded_title_words = []
+blocked_companies = []
+
+[sources]
+reed = ".agents/skills/reed-search/cli/src/cli.ts"
+
+[[queries]]
+label = "Reed project manager"
+source = "reed"
+args = ["search", "-q", "project manager", "--jobage", "7", "--limit", "30"]
+
+[[queries]]
+label = "Reed operations manager"
+source = "reed"
+args = ["search", "-q", "operations manager", "--jobage", "7", "--limit", "30"]
+
+[[queries]]
+label = "Reed account manager"
+source = "reed"
+args = ["search", "-q", "account manager", "--jobage", "7", "--limit", "30"]

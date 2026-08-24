@@ -21,8 +21,8 @@ interface SearchPayload {
 // as personal use only. Run them by hand when you need to check the parser still matches
 // the live markup:  RUN_LIVE_TESTS=1 bun run test
 describe.skipIf(!process.env.RUN_LIVE_TESTS)("live search", () => {
-  test('keyword search "software engineer" returns real results', async () => {
-    const r = await runCLI(["search", "-q", "software engineer", "--limit", "5"]);
+  test('keyword search "civil engineer" returns real results', async () => {
+    const r = await runCLI(["search", "-q", "civil engineer", "--limit", "5"]);
     expect(r.exitCode).toBe(0);
     const data = parseJSON<SearchPayload>(r);
     expect(data.meta.count).toBeGreaterThanOrEqual(1);
@@ -38,7 +38,7 @@ describe.skipIf(!process.env.RUN_LIVE_TESTS)("live search", () => {
     }
   }, 30000);
 
-  test("discipline browse (computing-technology) returns results", async () => {
+  test("discipline browse (all-disciplines) returns results", async () => {
     const r = await runCLI(["search", "-t", "graduate-jobs", "--limit", "3"]);
     expect(r.exitCode).toBe(0);
     const data = parseJSON<SearchPayload>(r);

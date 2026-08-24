@@ -1,0 +1,37 @@
+# Cross-sector UK graduate example. Copy to config.toml and customise every query.
+
+[settings]
+tracker = ""
+tracker_company_column = 0
+tracker_skip_rows = 1
+polite_delay_seconds = 1.5
+query_timeout_seconds = 120
+
+[filters]
+excluded_title_words = []
+blocked_companies = []
+
+[sources]
+reed = ".agents/skills/reed-search/cli/src/cli.ts"
+gradcracker = ".agents/skills/gradcracker-search/cli/src/cli.ts"
+prospects = ".agents/skills/prospects-search/cli/src/cli.ts"
+
+[[queries]]
+label = "Reed graduate schemes"
+source = "reed"
+args = ["search", "-q", "graduate scheme", "--graduate", "--jobage", "7", "--limit", "30"]
+
+[[queries]]
+label = "Prospects human resources"
+source = "prospects"
+args = ["search", "-q", "human resources", "--limit", "20"]
+
+[[queries]]
+label = "Prospects public sector"
+source = "prospects"
+args = ["search", "-q", "public sector", "--limit", "20"]
+
+[[queries]]
+label = "Gradcracker all STEM disciplines"
+source = "gradcracker"
+args = ["search", "--discipline", "all-disciplines", "--type", "graduate-jobs", "--limit", "30"]

@@ -1,56 +1,44 @@
-# Working in this repo
+# Working in this repository
 
-This is a job-hunt workspace: it finds job postings automatically, then helps the owner of the
-repo apply to them. You are assisting one person with their own job search.
+This is reusable UK job-discovery tooling. It is not tied to a particular candidate, profession,
+sector, seniority level, or location.
 
-Read these before doing substantive work:
-- `README.md` — setup, configuration, and the portal quirks
-- `CLAUDE.md` — the candidate profile and application workflow (despite the name, it is plain
-  markdown and applies to any assistant)
-- `.claude/skills/job-application-assistant/` — the profile files, CV and cover letter
-  templates, and the verification checklist
+Read `README.md` before substantive work. Portal-specific behaviour and access restrictions are
+documented in each `.agents/skills/*/SKILL.md` file.
 
-## What is code and what is judgement
+## Privacy boundary
 
-`job_scraper/daily_scrape.py` and the portal CLIs under `.agents/skills/` find jobs by calling
-real APIs. **Never invent, guess at, or "helpfully" fill in a job posting.** If a listing is
-not in a scrape report or given to you by the user, it does not exist. A fabricated role costs
-the user hours of work on an application that goes nowhere, and this repo is deliberately
-structured so you never have to produce one.
+The tracked repository must contain only public code, documentation, tests, and generic examples.
+Never commit a person’s name, contact details, home area, CV, cover letter, candidate profile,
+application answers, job-search history, tracker, API key, or personalised query configuration.
 
-Your job is rating, writing, and checking:
-- assess fit against the profile before drafting anything, and say so if the fit is poor
-- tailor the CV and cover letter to the specific posting
-- verify every claim you write against the profile files
+Private data belongs only in ignored local files:
 
-## Rules that matter more than they look
+- `config.toml`
+- `.env` files or environment variables
+- `job_scraper/seen_jobs.json`
+- `job_scraper/reports/`
+- `documents/`, PDFs, and spreadsheets
 
-**Never fabricate anything on an application document.** No skills the profile does not list,
-no invented achievements, no companies the user did not work for, no metrics you cannot source
-from their own notes. A CV is a factual claim made to an employer. Leave a genuine gap visible
-rather than papering over it — an honest gap is survivable, a discovered fabrication is not.
+If private data is needed for an application task, use only what the user explicitly provides,
+keep it outside tracked files, and verify every factual claim. Ask before submitting an
+application, sending a message, or changing an external account.
 
-**Verify the listing is real before drafting.** Open the URL. Aggregators repost roles under
-misleading titles, some "listings" are CV-harvesting exercises, and scraped data goes stale.
-Check the employer's own careers page or applicant tracking system when anything looks off.
+## Listing integrity
 
-**Respect the job boards.** Some of these sources restrict automated access, and the CLIs are
-written to stay inside those limits — see the portal quirks in `README.md`. Do not widen a
-query into a mode a site disallows, and do not add scraping of a new site without checking its
-`robots.txt` and terms first.
+Never invent or fill gaps in a job posting. Only report roles returned by a configured source or
+given directly by the user. Open the original employer or applicant-tracking-system page before
+drafting application material because aggregators can mislabel or retain stale listings.
 
-**Check compiled output, not source.** LaTeX page breaks are not predictable from the `.tex`
-file. Read the generated PDF before telling the user a document is finished.
-
-**Ask before sending anything outward.** Submitting an application, emailing a recruiter, or
-posting to a profile is the user's decision, not yours. Draft it, show it, wait.
+Respect each source’s terms and `robots.txt`. Do not add or widen automated scraping without first
+checking the source’s rules. Live-request tests must remain opt-in through `RUN_LIVE_TESTS=1` so CI
+does not scrape third-party sites.
 
 ## Conventions
 
-- Configuration lives in `config.toml` (gitignored). Never hardcode search terms, paths, or
-  filters into `daily_scrape.py` — add them to the config schema instead.
-- `config.toml`, `job_scraper/seen_jobs.json`, `job_scraper/reports/` and anything under
-  `documents/` are the user's private data. Do not commit them.
-- Python tests: `python -m unittest discover job_scraper/tests`. CLI tests: `bun run test` in
-  each `cli/` directory. Tests that make live requests are skipped unless `RUN_LIVE_TESTS=1` —
-  keep it that way, so CI never scrapes a third party.
+- All search terms, locations, paths, filters, and exclusions belong in `config.toml`, never in
+  `job_scraper/daily_scrape.py`.
+- Public examples must cover varied, non-identifying roles and locations.
+- The default configuration must not assume a technical career or entry-level seniority.
+- Python tests: `python -m unittest discover job_scraper/tests`.
+- CLI tests: `bun run test` in each `.agents/skills/*/cli` directory.

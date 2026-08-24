@@ -1,5 +1,24 @@
-# Edit the two paths below to match where you cloned ai-job-search.
-$action = New-ScheduledTaskAction -Execute "C:\Windows\py.exe" -Argument '"C:\path\to\ai-job-search\job_scraper\daily_scrape.py"'
-$trigger = New-ScheduledTaskTrigger -Daily -At 08:57
-$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
-Register-ScheduledTask -TaskName "AI Job Search Daily Scrape" -Action $action -Trigger $trigger -Settings $settings -Description "Scrapes job portals daily via ai-job-search CLIs; report lands in job_scraper\reports" -Force *> "C:\path\to\ai-job-search\job_scraper\task_install_log.txt"
+param(
+    [string]$At = "08:00",
+    [string]$TaskName = "UK Job Search Daily Scrape"
+)
+
+$jobSearchPython = (Get-Command py.exe -ErrorAction Stop).Source
+$jobSearchScript = Join-Path $PSScriptRoot "daily_scrape.py"
+$jobSearchLog = Join-Path $PSScriptRoot "task_install_log.txt"
+
+$action = New-ScheduledTaskAction -Execute $jobSearchPython -Argument "`"$jobSearchScript`""
+$trigger = New-ScheduledTaskTrigger -Daily -At $At
+$settings = New-ScheduledTaskSettingsSet `
+    -StartWhenAvailable `
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
+
+Register-ScheduledTask `
+    -TaskName $TaskName `
+    -Action $action `
+    -Trigger $trigger `
+    -Settings $settings `
+    -Description "Runs the configured UK job searches and writes a private daily report." `
+    -Force *> $jobSearchLog
+
+Write-Host "Registered '$TaskName' at $At using $jobSearchScript"
