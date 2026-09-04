@@ -8,6 +8,26 @@ runner that combines results into one report.
 The toolkit is role-agnostic. Job titles, sectors, seniority, locations, exclusions, and tracker
 settings live in a private local config file rather than in the repository.
 
+## Do I need an AI coding assistant?
+
+**No.** You do not need Codex, Claude Code, Gemini CLI, or another AI coding tool to install or
+run this toolkit. It is a normal local program that runs from PowerShell.
+
+An AI assistant is optional. It can help you edit search terms or understand an error, but the
+instructions below are designed to work without one.
+
+## What this toolkit does
+
+After setup, one command searches the configured UK job sources and creates a dated report on
+your computer:
+
+```text
+job_scraper/reports/2026-09-04.md
+```
+
+It does not apply for jobs, upload your CV, or send your information to employers. You review the
+results and decide what to do with them.
+
 ## Privacy first
 
 This repository intentionally contains no candidate profile, CV, contact details, search history,
@@ -23,34 +43,136 @@ The following local files are ignored by Git:
 Keep API keys in environment variables. Before publishing a fork, run `git status` and check every
 file that will be committed.
 
-## Install
+## Beginner setup for Windows
 
-Install the base framework first:
+Allow about 15 minutes. You only need to do this section once.
 
-```bash
-git clone https://github.com/MadsLorentzen/ai-job-search
-cd ai-job-search
+### Step 1: install the three required programs
+
+Install:
+
+1. [Git for Windows](https://git-scm.com/download/win)
+2. [Python 3.11 or newer](https://www.python.org/downloads/windows/)
+3. [Bun](https://bun.sh/docs/installation)
+
+During the Python installation, tick **Add Python to PATH** if that option appears.
+
+Restart PowerShell after installing them. Open PowerShell from the Windows Start menu and check
+that all three are available:
+
+```powershell
+git --version
+py --version
+bun --version
 ```
 
-Follow its `SETUP.md`, then copy this add-on over the clone. It adds:
+Each command should print a version number. If one says that the command was not recognised,
+restart the computer and try again before continuing.
 
-```text
-.agents/skills/reed-search/
-.agents/skills/gradcracker-search/
-.agents/skills/prospects-search/
-job_scraper/daily_scrape.py
-job_scraper/register_task.ps1
+### Step 2: download the framework and this add-on
+
+Copy the entire block below, paste it into PowerShell, and press Enter:
+
+```powershell
+Set-Location "$env:USERPROFILE\Documents"
+git clone https://github.com/MadsLorentzen/ai-job-search.git
+git clone https://github.com/foodiezy/uk-jobsearch-addon.git
+
+Copy-Item -Recurse -Force ".\uk-jobsearch-addon\.agents" ".\ai-job-search\"
+Copy-Item -Recurse -Force ".\uk-jobsearch-addon\examples" ".\ai-job-search\"
+Copy-Item -Recurse -Force ".\uk-jobsearch-addon\job_scraper" ".\ai-job-search\"
+Copy-Item -Force ".\uk-jobsearch-addon\config.example.toml" ".\ai-job-search\config.example.toml"
+
+Set-Location ".\ai-job-search"
 ```
 
-Requirements:
+This creates `Documents\ai-job-search`, which is the folder you will use from now on. The
+separate `Documents\uk-jobsearch-addon` folder is only the downloaded add-on source and can be
+left alone.
 
-- Python 3.11 or newer for the daily runner
-- Bun for the TypeScript portal clients
-- A free `REED_API_KEY` for Reed searches
+If PowerShell says that `ai-job-search` already exists, do not delete it if it contains your
+information. Open that folder and follow its `SETUP.md`, or ask someone to help merge the add-on
+safely.
 
-Install each client’s packages from its `cli/` directory with `bun install`.
+### Step 3: install the job-source packages
 
-## Configure any kind of job search
+Run this block from the `ai-job-search` folder:
+
+```powershell
+Set-Location ".agents\skills\reed-search\cli"
+bun install
+Set-Location "..\..\gradcracker-search\cli"
+bun install
+Set-Location "..\..\prospects-search\cli"
+bun install
+Set-Location "..\..\..\.."
+```
+
+### Step 4: create your private search settings
+
+Run:
+
+```powershell
+Copy-Item config.example.toml config.toml
+notepad config.toml
+```
+
+Notepad will open. Find the lines containing sample searches such as `project coordinator`,
+`customer service advisor`, `marketing`, and `finance`. Replace those phrases with the jobs you
+want. You can also change or add a location inside a query's `args` list.
+
+Save the file and close Notepad. `config.toml` is private and ignored by Git, so personal search
+settings are not published to this repository.
+
+### Step 5: add Reed jobs (optional)
+
+Gradcracker and Prospects can run without an API key. Reed requires a free key.
+
+1. Register at [Reed's developer page](https://www.reed.co.uk/developers/jobseeker).
+2. Copy the API key Reed gives you.
+3. Replace `paste-your-key-here` below and run the command in PowerShell:
+
+```powershell
+[Environment]::SetEnvironmentVariable("REED_API_KEY", "paste-your-key-here", "User")
+```
+
+Close PowerShell and open it again after saving the key. Never put the key in `config.toml`, a
+GitHub issue, a screenshot, or a message to somebody else.
+
+If you do not want Reed results, remove or comment out the Reed `[[queries]]` blocks in
+`config.toml`. The other sources will still work.
+
+### Step 6: check the setup
+
+Return to the project folder and perform a dry run. A dry run checks the configuration without
+searching the internet:
+
+```powershell
+Set-Location "$env:USERPROFILE\Documents\ai-job-search"
+py job_scraper\daily_scrape.py --dry-run
+```
+
+If it finishes without an error, run the real search:
+
+```powershell
+py job_scraper\daily_scrape.py
+```
+
+Open `Documents\ai-job-search\job_scraper\reports`. The newest Markdown file contains the
+results. Markdown files can be opened in Notepad, Visual Studio Code, or a web-based Markdown
+viewer.
+
+### Optional: ask an AI coding assistant to set it up
+
+If you already use Codex, Claude Code, or a similar tool, open it in the downloaded
+`uk-jobsearch-addon` folder and use this prompt:
+
+> Read README.md completely. Set this add-on up with the MadsLorentzen/ai-job-search framework
+> on Windows. Do not add personal information or API keys to tracked files. Stop and ask me only
+> when you need my Reed API key or my preferred job titles and locations. Run the dry-run check
+> when setup is complete.
+
+## Configuration reference
 
 Copy the public template to the private config file:
 
@@ -104,7 +226,7 @@ py job_scraper/daily_scrape.py --dry-run --config examples/uk-general.toml
 If an optional source from the upstream framework is not installed, its queries are skipped with
 a warning rather than stopping the report.
 
-## Reed API key
+## Reed API key reference
 
 Register at <https://www.reed.co.uk/developers/jobseeker>, then store the key outside the repo:
 
@@ -135,6 +257,31 @@ powershell -ExecutionPolicy Bypass -File job_scraper\register_task.ps1
 
 The registration script uses the current repository path and accepts optional `-At` and
 `-TaskName` parameters, so it does not contain a user-specific directory.
+
+Scheduling is optional. Run searches manually until you are happy with the results and search
+terms.
+
+## Common problems
+
+### `git`, `py`, or `bun` is not recognised
+
+Close PowerShell, restart the computer, and rerun the three version checks from Step 1. If only
+Python fails, try `python --version`. If that works, replace `py` with `python` in the commands.
+
+### `REED_API_KEY` is missing
+
+Complete Step 5, then close and reopen PowerShell. Alternatively, remove Reed queries from
+`config.toml` and use the other sources.
+
+### The report contains no jobs
+
+Try a broader job title, remove a location temporarily, and increase the query's `--limit`. Also
+check the original job sites because a source may have no matching vacancies that day.
+
+### A result has expired or has the wrong seniority
+
+Search feeds can be stale or imperfect. Always open the employer's original vacancy before
+preparing an application. The report is a discovery tool, not proof that a vacancy is still open.
 
 ## Portal notes
 
